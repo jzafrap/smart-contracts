@@ -32,18 +32,25 @@ contract SnowflakeSnippets is SnowflakeResolver {
 
     }
 
-       // implement signup function
-    function onAddition(uint ein, uint, bytes memory ) 
+    // implement signup function
+    // in this case, extraData encodes two params: contactName and contactData of registered user
+    function onAddition(uint ein, uint, bytes memory extraData) 
     public 
     senderIsSnowflake() 
     returns (bool) {
         SnowflakeInterface snowflake = SnowflakeInterface(snowflakeAddress);
         snowflake.withdrawSnowflakeBalanceFrom(ein, owner(), signUpFee);
 
-       users[ein].ein = ein;
+      	//3. update the users mapping
+      	 (string memory contactName, string memory contactData) = abi.decode(extraData, (string, string));
+		//here you must store the decoded parameters, for example:
+		users[ein].contactName = contactName;
+		users[ein].contactData = contactData;
 
+       // emit StatusSignUp(ein);
         return true;
     }
+    
 
     function onRemoval(uint, bytes memory) 
     public 
